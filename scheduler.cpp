@@ -86,6 +86,7 @@ void runCurrentTask(){
     t.state = READY;
 }
 
+//Update the delays
 void updateDelays(){
     for (auto& task : tasks){
         if (task.delay > 0){
@@ -94,16 +95,19 @@ void updateDelays(){
     }
 }
 
+// "Tells" the current task to sleep
 void sleepCurrentTask(int ticks) {
     if (currentTask < 0) return;
     tasks[currentTask].delay = ticks;
 }
 
+// Set the delay for the tasks
 void setTaskDelay(int taskId, int ticks) {
     if (taskId < 0 || taskId >= tasks.size()) return;
     tasks[taskId].delay = ticks;
 }
 
+// When the CPU is not active, the CPU is in an idle state
 void idleTask(){
     std::cout << "[IDLE] Current CPU is idle\n";
 }
