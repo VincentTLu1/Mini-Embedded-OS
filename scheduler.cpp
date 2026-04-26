@@ -15,18 +15,20 @@ struct Task{
  TaskState state;
  void (*taskFunc)();
  int delay;
+ int priority;
 };
 
 std::vector<Task> tasks;
 int currentTask = -1;
 
 // Add a task to the scheduler function
-void addTask(void (*func)()){
+void addTask(void (*func)(), int priority){
     Task t;
     t.delay = 0;
     t.state = READY;
     t.id = tasks.size();
     t.taskFunc = func;
+    t.priority = priority;
     tasks.push_back(t);
 }
 
@@ -34,15 +36,31 @@ void addTask(void (*func)()){
 bool schedule() {
     if (tasks.empty()) return false;
 
+    int prio_task = INT_MAX;
+
+    //Figure out the mst optimal priority for the system
+    for (int i = 0; i < tasks.size(); i++){
+        if (tasks[i].delay == 0){
+            if (tasks[i].priority < prio_task){
+                prio_task = std::min(prio_task, tasks[i].priority);
+            }
+        }
+    }
+
+    if (prio_task == INT_MAX){
+        std::cout << "[SCHEDULER] No runnable tasks at the moment\n";
+        return false;
+    }
+    
     int start_task = currentTask;
     int attempt = 0;
-
+    //Round Robin within priority
     do {
         currentTask = (currentTask + 1) % tasks.size();
         attempt++;
 
-        if (tasks[currentTask].delay == 0) {
-            std::cout << "[SCHEDULER] Switching to Task " << currentTask + 1 << "\n";
+        if (tasks[currentTask].delay == 0 && tasks[currentTask].priority == prio_task) {
+            std::cout << "[SCHEDULER] Switching to Task " << tasks[currentTask].id << "\n";
             return true;
         }
 
@@ -66,8 +84,6 @@ void runCurrentTask(){
     t.taskFunc();
 
     t.state = READY;
-
-    t.delay = TIME_SLICE;
 }
 
 void updateDelays(){
@@ -86,5 +102,9 @@ void sleepCurrentTask(int ticks) {
 void setTaskDelay(int taskId, int ticks) {
     if (taskId < 0 || taskId >= tasks.size()) return;
     tasks[taskId].delay = ticks;
+}
+
+void idleTask(){
+    std::cout << "[IDLE] Current CPU is idle\n";
 }
 

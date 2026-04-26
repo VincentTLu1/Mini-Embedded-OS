@@ -1,12 +1,13 @@
 # Mini-Embedded-OS
 
-This is a C++ based application that allows users to simulate a embedded system designed operating system.
+This is a C++ based application that allows users to simulate a embedded system designed operating system. The simulator includes a scheduler, delayed-based task handling, and simulated GPIO LED peripherals. The system involves a structure where each task will be independent. 
 
 ## Features
-- Simulate tasks 
+- Simulate indepdent tasks 
 - Timer based applications
-- Scheduler based
-- More to be added soon
+- Scheduler (Round Robin and Priority based)
+- GPIO LED peripheral handling
+- More coming soon!
 
 ## Project Structure
 - `gpio.h` - header file for gpio
