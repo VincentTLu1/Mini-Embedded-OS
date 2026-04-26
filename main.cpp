@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include "gpio.h"
 
 using namespace std;
 
@@ -12,11 +13,12 @@ void sleepCurrentTask(int ticks);
 
 void task1(){
     cout << "Task 1 executing\n";
-
+    LED1.toggle();
 };
 
 void task2(){
     cout << "Task 2 executing\n";
+    LED2.toggle();
 };
 
 int main() {

@@ -42,7 +42,7 @@ bool schedule() {
         attempt++;
 
         if (tasks[currentTask].delay == 0) {
-            std::cout << "[SCHEDULER] Switching to Task " << currentTask << "\n";
+            std::cout << "[SCHEDULER] Switching to Task " << currentTask + 1 << "\n";
             return true;
         }
 
