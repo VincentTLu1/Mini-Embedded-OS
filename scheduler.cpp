@@ -1,7 +1,7 @@
 #include <vector>
 #include <iostream>
 
-const int TIME_SLICE = 2;
+const int DEF_TIME_SLICE = 2;
 
 // The different task states: Ready, Running, Stopped
 enum TaskState{
@@ -16,6 +16,10 @@ struct Task{
  void (*taskFunc)();
  int delay;
  int priority;
+
+ int default_priority; //for aging
+ 
+ int timeSlice; //for time slicing in preemption
 };
 
 std::vector<Task> tasks;
@@ -30,6 +34,9 @@ void addTask(void (*func)(), int priority){
     t.taskFunc = func;
     t.priority = priority;
     tasks.push_back(t);
+    t.default_priority = priority;
+
+    t.timeSlice = DEF_TIME_SLICE;
 }
 
 // Main schedule function 
@@ -49,6 +56,8 @@ bool schedule() {
 
     if (prio_task == INT_MAX){
         std::cout << "[SCHEDULER] No runnable tasks at the moment\n";
+
+        currentTask -= 1;
         return false;
     }
     
@@ -112,3 +121,35 @@ void idleTask(){
     std::cout << "[IDLE] Current CPU is idle\n";
 }
 
+// Control aging into the simulator
+void addAging(){
+    for (auto &task: tasks){
+        if (task.delay == 0){
+            if (task.priority > 0){
+                task.priority -= 1;
+            }
+        }
+
+        else{
+            task.priority = task.default_priority;
+        }
+    }
+}
+
+// Test for preemption
+bool willPreempt() {
+    if (currentTask < 0){
+        return true;
+    }
+
+    tasks[currentTask].timeSlice--;
+
+    if (tasks[currentTask].timeSlice <= 0){
+        std::cout << "[PREEMPT] TASK " << tasks[currentTask].id << " time slice has expired\n";
+
+        tasks[currentTask].timeSlice = DEF_TIME_SLICE;
+        return true;
+    }
+
+    return false;
+}
